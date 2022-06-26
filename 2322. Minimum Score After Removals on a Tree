@@ -1,0 +1,47 @@
+class Solution:
+    def minimumScore(self, nums: List[int], e: List[List[int]]) -> int:
+        allxor = reduce(xor, nums)
+        n = len(nums)
+        edges = [[] for i in range(n)]
+        for a, b in e:
+            edges[a].append(b)
+            edges[b].append(a)
+        child = [[] for i in range(n)]
+        ans = 10**18
+        precal = [0]*n
+        def dfs(x, p):
+            precal[x] = nums[x]
+            for i in edges[x]:
+                if i != p:
+                    dfs(i, x)
+                    precal[x] ^= precal[i]
+                    child[x].append(i)
+        dfs(0, 0)
+        comp = []
+        def dfs2(x):
+            comp.append(x)
+            for i in child[x]:
+                dfs2(i)
+                
+        process = [[False]*n for i in range(n)]
+        for i in range(1, n):
+            comp = []
+            dfs2(i)
+            for j in comp[1:]:
+                one = precal[j]
+                two = precal[i]^precal[j]
+                three = allxor ^ one ^ two
+                ans = min(ans, max(one, two, three)-min(one, two, three))
+                process[i][j] = process[j][i] = True
+                #print('t1', i, j, one, two, three)
+        for i in range(1, n):
+            for j in range(1, n):
+                if i != j and not process[i][j]:
+                    one = precal[i]
+                    two = precal[j]
+                    three = allxor ^ one ^ two
+                    ans = min(ans, max(one, two, three)-min(one, two, three))
+                    #print('t2', i, j, one, two, three)
+        
+        return ans
+        
