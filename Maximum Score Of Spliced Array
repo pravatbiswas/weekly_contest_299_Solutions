@@ -1,0 +1,14 @@
+class Solution:
+    def maximumsSplicedArray(self, a: List[int], b: List[int]) -> int:
+        n = len(a)
+        def gao(a, b):
+            t = sum(a)
+            c = [b[i] - a[i] for i in range(n)]
+            z = 0
+            f = 0
+            for i in c:
+                f = max(f, 0) + i
+                z = max(z, f)
+            z += t
+            return z
+        return max(gao(a, b), gao(b, a))
